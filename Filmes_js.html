@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes</title>
+</head>
+<body>
+    
+    <form id="form">
+        <input type="text" id="nome" placeholder="Nome do filme" required>
+        <input type="text" id="categoria" placeholder="Categoria" required>
+
+        <button type="button" onclick= "cadastrar()" id="btnCadastrar">Cadastrar</button>
+        <button type="button" onclick= "remover()" id="btnRemover">Remover</button>
+
+        <table>
+            <caption>Filmes</caption>
+            <thead>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Nome
+                </th>
+                <th>
+                    Categoria
+                </th>
+                <th>
+                    Ano Lançamento
+                </th>
+            </thead>
+            <tbody id="tabela-lista-corpo"></tbody>
+        </table>
+    </form>
+
+</body>
+<script>
+    let url = 'https://5f8c7d15c7aadb001605e396.mockapi.io/api/NewFilm';
+
+    let newfilm = document.querySelector('#nome');
+    let categoria = document.querySelector('#categoria')
+    let NewFilms = [];
+
+
+    //Criando metodo get
+    function listar(){
+        let xhrGet = new XMLHttpRequest();
+        xhrGet.onload = listarSucesso;
+        xhrGet.onerror = ListarErro;
+        xhrGet.open('GET', url);
+        xhrGet.send();
+    }
+
+    function listarSucesso(){
+        console.log('sucesso');
+        const data = this.responseText;
+        NewFilms = JSON.parse(data)
+        console.log(NewFilms);
+    }
+
+    function ListarErro(err){
+        console.log(err);
+    }
+
+    //criando metodo Post
+    function cadastrar(){
+        event.preventDefault();
+
+        let xhrPost = new XMLHttpRequest();
+        xhrPost.onload =  cadastroSucesso;
+        xhrPost.onerror = cadastroErro;
+        //enviando dados para a api
+        xhrPost.open('POST', url);
+        xhrPost.setRequestHeader('content-type', 'application/json');
+        //Para enviar no post, estou convertendo meu objeto para json
+        
+        let params = {
+            name : newfilm.value,
+            categoria :categoria.value
+        }
+        
+        xhrPost.send(JSON.stringify(params))
+    }
+
+    function cadastroSucesso(){
+        console.log('Sucesso!');
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+    }
+
+    function cadastroErro(){
+        console.log('Erro!!!!' + err );
+    }
+
+
+    //Criando metodo DELETE
+    function remover(){
+        let xhrDelete = new XMLHttpRequest();
+        xhrDelete.onload = removeSucesso;
+        xhrDelete.onerror = removeErro;
+        xhrDelete.open('DELETE', url + '/' + newfilm.value);
+        xhrDelete.send();
+    }
+
+    function removeSucesso(){
+        console.Log('Filme removido com sucesso!')
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+    }
+
+    function removeErro(){
+        console.log('Erro!!!!' + err);
+    }
+
+</script>
+</html>
